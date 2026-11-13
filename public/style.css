@@ -246,6 +246,7 @@ input:focus { border-color: var(--bleu); }
 @keyframes eclat { from { transform: scale(.9) rotate(-4deg); } to { transform: scale(1.05) rotate(4deg); } }
 .voile-titre { font-size: 36px; font-weight: 900; margin: 0 0 8px; }
 .voile-texte { font-size: 18px; font-weight: 700; margin: 0; line-height: 1.4; }
+.voile-suite { font-size: 16px; font-weight: 900; margin: 14px 0 0; }
 
 /* ---------- Fin ---------- */
 .record strong { font-size: 18px; }

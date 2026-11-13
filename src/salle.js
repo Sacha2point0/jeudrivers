@@ -199,17 +199,20 @@ class Salle {
     // On ne nomme personne : l'accident est celui de l'équipage.
     const cause = `« ${consigne.texte} » n'a pas été fait à temps.`;
     this.evenement('accident', cause);
+    p.dernierAccident = cause;
+    // Tous les téléphones affichent l'écran d'accident pendant la pause.
+    p.accidentJusqua = maintenant + REGLES.pauseAccident;
     if (p.vies <= 0) {
-      this.phase = 'fin';
+      // Partie perdue : l'écran d'accident s'affiche chez tout le monde,
+      // puis on passe à l'écran de fin (voir tic).
+      p.perdu = true;
       p.fin = maintenant;
       p.cause = cause;
       p.record = !this.record || p.score > this.record.score;
       if (p.record) this.record = { score: p.score, distance: Math.round(p.distance) };
       this.essais += 1;
-      this.evenement('fin', 'Fin de la route.');
       return;
     }
-    p.accidentJusqua = maintenant + REGLES.pauseAccident;
     for (const jid of p.joueurs) {
       p.pause[jid] = p.accidentJusqua + hasard(500, 3000);
     }
@@ -222,7 +225,11 @@ class Salle {
     if (this.phase === 'jeu' && p) {
       const dt = maintenant - p.dernierTic;
       p.dernierTic = maintenant;
-      if (maintenant >= p.accidentJusqua) {
+      if (p.perdu && maintenant >= p.accidentJusqua) {
+        this.phase = 'fin';
+        this.evenement('fin', 'Fin de la route.');
+        this.signaler();
+      } else if (maintenant >= p.accidentJusqua) {
         p.distance += (REGLES.vitesse(p.niveau) / 3.6) * (dt / 1000);
 
         // Consignes expirées : accident (une seule à la fois).
@@ -331,6 +338,8 @@ class Salle {
       accidents: p.accidents,
       duree: Math.round(((p.fin || maintenant) - p.debut) / 1000),
       accident: Math.max(0, p.accidentJusqua - maintenant),
+      messageAccident: p.dernierAccident || '',
+      perdu: !!p.perdu,
       joue: p.joueurs.includes(jid),
       cause: p.cause || null,
       record: !!p.record,

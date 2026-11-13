@@ -173,6 +173,10 @@
     // Accident en cours
     const accident = p.accident > 0;
     $('voile-accident').hidden = !accident;
+    if (accident) {
+      $('voile-texte').textContent = p.messageAccident;
+      $('voile-suite').textContent = p.perdu ? 'La route s’arrête ici.' : 'On repart dans un instant…';
+    }
     if (accident && !enAccident) {
       vibrer([200, 80, 200]);
       const ecran = $('ecran-jeu');
@@ -278,8 +282,7 @@
     if (dernierEvenement === null) { dernierEvenement = dernier; return; }
     for (const e of evenements) {
       if (e.num <= dernierEvenement) continue;
-      if (e.type === 'accident') $('voile-texte').textContent = e.texte;
-      else if (e.type === 'reussite') {
+      if (e.type === 'reussite') {
         toast(e.texte);
         const bloc = $('consigne');
         bloc.classList.remove('bravo'); void bloc.offsetWidth; bloc.classList.add('bravo');
