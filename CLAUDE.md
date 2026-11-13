@@ -2,8 +2,11 @@
 
 Jeu de coordination multijoueur du séminaire « Le permis de manager » (Sogea-Satom, décembre 2026), projet de Sacha Lopez (WORKLAB). Compagnon de l'appli PHP principale (`Sacha2point0/driversmanagers`, clone local `~/Sites/driversmanagers`, site `satom.worklab.fr`).
 
+## Place dans le séminaire
+Première étape de l'après-midi, juste après la leçon de code (présentation) et avant les trois épreuves de l'appli PHP (examen du code, manuel du conducteur, épreuve de conduite). Décision de Sacha du 13/11/2026 : il remplace le rond-point. Que le score compte ou non au classement du permis n'est pas décidé : ne rien en dire dans les supports. Il est présenté dans la présentation des drivers et dans la fiche facilitateur (déroulé et questions de débrief), dossier Drive du séminaire.
+
 ## Principe
-2 à 15 joueurs = l'équipage d'une voiture, chacun sur son téléphone. Chacun a des commandes (1 à 3 selon la taille de l'équipage) ; les consignes apparaissent sur le téléphone d'un **autre** joueur, qui doit les crier. Consigne non exécutée à temps = accident (on ne nomme personne) ; une seule vie (décision de Sacha le 13/11/2026) : le premier accident arrête la route, n'importe quel joueur peut relancer, la salle garde son record (`vies` dans `content/regles.js`). Le niveau monte toutes les 5 réussites : la voiture accélère, le chrono se resserre (14 s à 5 s), plus de consignes simultanées.
+2 à 15 joueurs = l'équipage d'une voiture, chacun sur son téléphone. Chacun a des commandes (1 à 3 selon la taille de l'équipage) ; les consignes apparaissent sur le téléphone d'un **autre** joueur, qui doit les crier. Consigne non exécutée à temps = accident (on ne nomme personne) ; une seule vie (décision de Sacha le 13/11/2026) : le premier accident arrête la route, n'importe quel joueur peut relancer, la salle garde son record (`vies` dans `content/regles.js`). Le niveau monte toutes les 3 réussites (15 niveaux) : la voiture accélère, le chrono se resserre (12 s, puis −10 % par niveau, 3,5 s au plus court), les consignes s'enchaînent plus vite et sont plus nombreuses en même temps (rythme renforcé le 13/11/2026 à la demande de Sacha).
 
 ## Choix techniques (validés avec Sacha le 13/11/2026)
 - Node.js seul, **aucune dépendance npm**. Déployé comme application Node.js Hostinger synchronisée avec ce dépôt, sur un site distinct de l'appli PHP (sous-domaine prévu).

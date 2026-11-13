@@ -182,7 +182,7 @@ class Salle {
     p.consignes.delete(crieur);
     p.score += REGLES.points(p.niveau);
     p.reussites += 1;
-    p.pause[crieur] = Date.now() + hasard(...REGLES.pauseEntreConsignes);
+    p.pause[crieur] = Date.now() + hasard(...REGLES.pauseEntreConsignes(p.niveau));
     this.evenement('reussite', 'Bien joué !', [crieur, acteur]);
     if (p.reussites % REGLES.reussitesParNiveau === 0 && p.niveau < REGLES.niveauMax) {
       p.niveau += 1;
