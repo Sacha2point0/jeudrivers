@@ -37,4 +37,6 @@ Les parties sont gardées en mémoire : un redémarrage du serveur (redéploieme
 - `content/commandes.js` : les 15 commandes de la voiture et leurs consignes (textes modifiables).
 - `content/regles.js` : vies, chrono, accélération, points.
 - `public/` : l'interface téléphone (HTML, CSS, JS sans framework).
+- `public/widgets.js` : les 15 commandes dessinées en SVG (volant à tourner au doigt, grille de vitesses en H, pédales, molettes…).
+- `public/atelier.html` : page de démonstration de toutes les commandes, hors partie (`/atelier.html`).
 - `tools/simulation.js` : équipage de robots pour les tests.

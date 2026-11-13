@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Atelier des commandes · En voiture !</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    .atelier { padding: 20px 16px; display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); max-width: 1100px; margin: 0 auto; }
+    .atelier .commande { --h-widget: 150px; }
+    .etat { margin: 6px 0 0; font-size: 13px; opacity: .7; }
+  </style>
+</head>
+<body>
+  <header class="titre"><p class="surtitre">En voiture !</p><h1>Atelier des commandes</h1>
+    <p class="aide">Les 15 commandes du jeu, pour les essayer hors partie.</p></header>
+  <div id="atelier" class="atelier"></div>
+  <script src="/widgets.js"></script>
+  <script>
+    fetch('/api/commandes').then((r) => r.json()).then((commandes) => {
+      for (const c of commandes) {
+        const bloc = document.createElement('div');
+        bloc.className = 'commande';
+        const titre = document.createElement('p');
+        titre.className = 'commande-nom';
+        titre.textContent = c.nom;
+        const etat = document.createElement('p');
+        etat.className = 'etat';
+        etat.textContent = c.type === 'choix' ? 'Position : ' + c.valeur : 'Action ponctuelle';
+        const w = Widgets.creer(c, (v) => { etat.textContent = v === null ? 'Action envoyée à ' + new Date().toLocaleTimeString() : 'Position : ' + v; });
+        bloc.append(titre, w.el, etat);
+        document.getElementById('atelier').append(bloc);
+      }
+    });
+  </script>
+</body>
+</html>

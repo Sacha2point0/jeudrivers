@@ -12,6 +12,7 @@ Jeu de coordination multijoueur du séminaire « Le permis de manager » (Sogea-
 - Session par onglet (`sessionStorage`) : plusieurs onglets = plusieurs joueurs pour tester.
 - Français uniquement, charte WORKLAB (texte bleu #1226AA, corail #FF8672, vert d'eau #3BD4AE, Nunito).
 - Contenus modifiables dans `content/` (commandes et consignes, réglages).
+- Graphismes (13/11/2026) : commandes dessinées en SVG dans `public/widgets.js` (pas d'images, pas d'emoji), 3 couleurs de la charte au plus ; la voiture sur la route suit volant, clignotant, phares et warnings (`vue.voiture`). Démonstration : `/atelier.html`. Les éléments SVG se déplacent par l'attribut `transform` animé en JS (les transitions CSS sur SVG se sont montrées peu fiables).
 
 ## Étapes
 1. **V1 (13/11/2026)** : salles par code à 4 chiffres, sans lien avec les équipes du séminaire, pour tester le jeu.

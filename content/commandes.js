@@ -17,11 +17,11 @@ module.exports = [
   {
     id: 'volant', nom: 'Volant', icone: '🛞', type: 'choix', initial: 'droit',
     valeurs: [
-      { id: 'gauche_toute', label: '⟲ À fond', consigne: 'Braque à fond à gauche !' },
-      { id: 'gauche', label: '↖ Un peu', consigne: 'Tourne un peu à gauche !' },
-      { id: 'droit', label: '↑ Droit', consigne: 'Remets les roues droites !' },
-      { id: 'droite', label: 'Un peu ↗', consigne: 'Tourne un peu à droite !' },
-      { id: 'droite_toute', label: 'À fond ⟳', consigne: 'Braque à fond à droite !' },
+      { id: 'gauche_toute', label: 'Gauche à fond', consigne: 'Braque à fond à gauche !' },
+      { id: 'gauche', label: 'Un peu à gauche', consigne: 'Tourne un peu à gauche !' },
+      { id: 'droit', label: 'Droit', consigne: 'Remets les roues droites !' },
+      { id: 'droite', label: 'Un peu à droite', consigne: 'Tourne un peu à droite !' },
+      { id: 'droite_toute', label: 'Droite à fond', consigne: 'Braque à fond à droite !' },
     ],
   },
   {

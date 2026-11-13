@@ -81,30 +81,56 @@ input:focus { border-color: var(--bleu); }
 /* ---------- Jeu ---------- */
 .ecran-jeu { gap: 12px; padding-top: 12px; }
 .tableau { display: flex; justify-content: space-between; align-items: center; font-size: 16px; }
-.vies { font-size: 22px; letter-spacing: 2px; }
+.vies { display: flex; gap: 4px; }
 .stat strong { font-size: 22px; font-weight: 900; }
 
+/* La route : chaussée bleue, bas-côtés avec des buissons qui défilent. */
 .route {
   --duree: 1s;
-  position: relative; height: 92px; border-radius: var(--rayon); overflow: hidden;
-  background: var(--gris-route);
+  position: relative; height: 112px; border-radius: var(--rayon); overflow: hidden;
+  display: grid; grid-template-columns: 1fr 2.4fr 1fr; background: var(--bleu-clair);
+}
+.bas-cote {
+  background-image:
+    radial-gradient(circle at 50% 50%, var(--vert) 0 13px, transparent 14px),
+    radial-gradient(circle at 30% 50%, var(--vert) 0 8px, transparent 9px);
+  background-size: 100% 96px, 100% 64px;
+  background-position: 0 0, 0 30px;
+  animation: buissons calc(var(--duree) * 2.4) linear infinite;
+}
+.bas-cote.droite { animation-delay: calc(var(--duree) * -1.1); }
+.chaussee {
+  position: relative; overflow: hidden; background: var(--bleu);
+  border-left: 5px solid #fff; border-right: 5px solid #fff;
 }
 .route-bande {
-  position: absolute; left: 50%; top: -40px; bottom: -40px; width: 6px; margin-left: -3px;
-  background: repeating-linear-gradient(to bottom, #fff 0 20px, transparent 20px 40px);
+  position: absolute; left: 50%; top: -48px; bottom: -48px; width: 6px; margin-left: -3px;
+  background: repeating-linear-gradient(to bottom, #fff 0 24px, transparent 24px 48px);
   animation: defile var(--duree) linear infinite;
 }
-.route::before, .route::after {
-  content: ''; position: absolute; top: 0; bottom: 0; width: 6px; background: var(--vert);
+.route.arret .route-bande, .route.arret .bas-cote { animation-play-state: paused; }
+@keyframes defile { from { transform: translateY(0); } to { transform: translateY(48px); } }
+@keyframes buissons { from { background-position: 0 0, 0 30px; } to { background-position: 0 96px, 0 94px; } }
+
+.voiture {
+  position: absolute; left: 58%; bottom: -6px; margin-left: -27px;
+  transition: transform .45s cubic-bezier(.3, .7, .3, 1); transform-origin: 50% 70%;
 }
-.route::before { left: 10px; }
-.route::after { right: 10px; }
-.route.arret .route-bande { animation-play-state: paused; }
-@keyframes defile { from { transform: translateY(0); } to { transform: translateY(40px); } }
-.voiture { position: absolute; left: 50%; bottom: 14px; margin-left: 10px; transition: transform .3s; }
-.route.choc .voiture { animation: choc .5s; }
-@keyframes choc { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-14deg); } 75% { transform: rotate(14deg); } }
-.distance { position: absolute; left: 24px; bottom: 8px; color: #fff; font-weight: 800; font-size: 14px; }
+.voiture .faisceau { opacity: 0; transition: opacity .3s; }
+.voiture.codes .faisceau { opacity: .22; }
+.voiture.pleins .faisceau { opacity: .5; }
+.voiture .feu { fill: #fff; stroke: var(--bleu); stroke-width: 1.5; }
+.voiture.cligno-gauche .feu.gauche, .voiture.cligno-droite .feu.droite { animation: cligne .8s steps(2, jump-none) infinite; }
+@keyframes cligne { 0% { fill: var(--vert); } 100% { fill: #fff; } }
+.distance {
+  position: absolute; left: 8px; bottom: 8px; background: #fff; border-radius: 99px;
+  padding: 2px 10px; font-weight: 900; font-size: 13px;
+}
+.ecran-jeu.secousse { animation: secousse .5s; }
+@keyframes secousse {
+  0%, 100% { transform: none; } 20% { transform: translateX(-10px) rotate(-1deg); }
+  40% { transform: translateX(9px) rotate(1deg); } 60% { transform: translateX(-6px); } 80% { transform: translateX(4px); }
+}
 
 .consigne {
   background: var(--blanc); border: 3px solid var(--corail); border-radius: var(--rayon);
@@ -121,31 +147,103 @@ input:focus { border-color: var(--bleu); }
 .chrono-barre.urgent { background: var(--corail); }
 .consigne.vide .chrono { visibility: hidden; }
 
+.consigne-etiquette { display: flex; align-items: center; gap: 6px; }
+.consigne.bravo { animation: bravo .7s; }
+@keyframes bravo { 0% { background: var(--vert); } 100% { background: var(--blanc); } }
+
 .etiquette-commandes { margin: 4px 0 0; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; opacity: .7; }
-.commandes { display: flex; flex-direction: column; gap: 10px; }
-.commande { background: var(--blanc); border-radius: var(--rayon); padding: 12px; box-shadow: 0 2px 10px rgba(18, 38, 170, .07); }
-.commande-nom { margin: 0 0 8px; font-weight: 900; font-size: 18px; display: flex; align-items: center; gap: 8px; }
-.commande-nom .icone { font-size: 22px; }
+/* Hauteur des dessins selon le nombre de commandes, pour tout voir sans faire défiler. */
+.commandes { --h-widget: 96px; display: flex; flex-direction: column; gap: 10px; }
+.commandes[data-n="1"] { --h-widget: 250px; }
+.commandes[data-n="2"] { --h-widget: 150px; }
+.commandes[data-n="3"] .w-label { font-size: 16px; padding: 8px 14px; min-width: 120px; text-align: center; }
+.commandes[data-n="3"] .w-bouton { flex-direction: row; justify-content: center; gap: 12px; }
+.commandes[data-n="3"] .w-bouton .w-svg { width: 45%; height: 80px; }
+.commandes[data-n="3"] .commande { display: grid; grid-template-columns: 1fr; }
+.commandes[data-n="3"] .positions-volant .position { min-height: 40px; padding: 4px 2px; }
+.commande { background: var(--blanc); border-radius: var(--rayon); padding: 10px 12px 12px; box-shadow: 0 2px 10px rgba(18, 38, 170, .07); }
+.commande-nom { margin: 0 0 4px; font-weight: 900; font-size: 17px; }
 .positions { display: grid; grid-template-columns: repeat(auto-fit, minmax(56px, 1fr)); gap: 6px; }
 .position {
   font: inherit; font-weight: 800; font-size: 15px; color: var(--bleu);
   background: var(--bleu-clair); border: 2px solid transparent; border-radius: 12px;
-  padding: 14px 4px; min-height: 52px; cursor: pointer; touch-action: manipulation;
+  padding: 12px 4px; min-height: 48px; cursor: pointer; touch-action: manipulation;
 }
 .position.active { background: var(--vert); border-color: var(--bleu); }
+.positions-volant { grid-template-columns: repeat(5, 1fr); gap: 4px; }
+.positions-volant .position { font-size: 12px; line-height: 1.15; padding: 8px 2px; }
 .position:active { transform: scale(.96); }
 .action {
   width: 100%; font: inherit; font-weight: 900; font-size: 20px; color: var(--bleu);
   background: var(--corail); border: 0; border-radius: 14px; padding: 18px; cursor: pointer; touch-action: manipulation;
 }
-.action:active, .action.presse { transform: scale(.96); background: var(--vert); }
+.action.appui { animation: enfonce .22s; }
+
+/* ---------- Widgets SVG ---------- */
+.w { display: flex; flex-direction: column; gap: 6px; }
+.w-svg { display: block; width: 100%; height: var(--h-widget); max-height: var(--h-widget); overflow: visible; }
+.w-glisse { touch-action: none; cursor: grab; }
+.w-clic, .rapport, .repere, .bouton-molette { cursor: pointer; }
+.w-texte { font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 800; fill: var(--bleu); text-anchor: middle; pointer-events: none; }
+.w-texte.actif { font-weight: 900; text-decoration: underline; text-decoration-color: var(--corail); text-decoration-thickness: 3px; }
+
+.volant-rot { transform-origin: 100px 82px; transition: transform .35s cubic-bezier(.3, .7, .3, 1); }
+.volant-rot.sans-transition { transition: none; }
+
+.fleche { transition: fill .2s; }
+.fleche.allume { animation: fleche .8s steps(2, jump-none) infinite; }
+@keyframes fleche { 0% { fill: var(--vert); } 100% { fill: #fff; } }
+.pommeau-texte { font-size: 16px; font-weight: 900; }
+
+.repere-fond { fill: transparent; transition: fill .2s; }
+.repere.actif .repere-fond { fill: var(--vert); }
+.aiguille { transition: transform .35s cubic-bezier(.3, .7, .3, 1); }
+
+.vitre { transition: transform .5s ease; }
+
+/* Boutons dessinés : pédales, klaxon, bascules */
+.w-bouton {
+  font: inherit; color: var(--bleu); background: none; border: 0; padding: 0; width: 100%;
+  cursor: pointer; touch-action: manipulation; align-items: center;
+}
+.w-label { font-weight: 900; font-size: 18px; background: var(--corail); border-radius: 12px; padding: 8px 18px; }
+.w-bouton .enfoncable { transform-origin: 100px 56px; }
+.w-bouton.appui .enfoncable { animation: enfonce .22s; }
+.w-bouton.appui .w-label { background: var(--vert); }
+@keyframes enfonce { 50% { transform: scale(.88); } }
+.onde { opacity: 0; }
+.w-bouton.appui .onde { animation: onde .5s; }
+.w-bouton.appui .onde-2 { animation-delay: .08s; }
+@keyframes onde { 0% { opacity: 0; transform: translateX(-6px); } 40% { opacity: 1; } 100% { opacity: 0; transform: translateX(8px); } }
+
+.w-etat { background: var(--bleu-clair); }
+.w-bouton.on .w-etat { background: var(--vert); }
+.triangle { fill: #fff; transition: fill .2s; }
+.w-bouton.on .triangle { animation: warning .8s steps(2, jump-none) infinite; }
+@keyframes warning { 0% { fill: var(--corail); } 100% { fill: #fff; } }
+.interrupteur-fond { fill: var(--bleu-clair); stroke: var(--bleu); stroke-width: 3; transition: fill .2s; }
+.w-bouton.on .interrupteur-fond { fill: var(--vert); }
+.interrupteur-plot { transition: transform .25s cubic-bezier(.3, .7, .3, 1); }
+.w-bouton.on .interrupteur-plot { transform: translateX(38px); }
+.levier { transform-origin: 46px 84px; transition: transform .35s cubic-bezier(.3, .7, .3, 1); }
+.w-bouton.on .levier { transform: rotate(-32deg); }
+
+/* Écrans à touches : autoradio, GPS */
+.ecran-afficheur {
+  background: var(--bleu); color: #fff; border-radius: 12px; padding: 12px 16px;
+  display: flex; flex-direction: column; align-items: flex-start; min-height: 70px; justify-content: center;
+}
+.ecran-petit { font-size: 12px; font-weight: 700; opacity: .75; letter-spacing: .06em; text-transform: uppercase; }
+.ecran-valeur { font-size: 24px; font-weight: 900; }
 
 .voile {
   position: fixed; inset: 0; background: rgba(255, 134, 114, .92); display: flex; align-items: center; justify-content: center;
   padding: 24px; z-index: 10;
 }
 .voile-contenu { text-align: center; max-width: 420px; }
-.voile-icone { font-size: 64px; margin: 0; }
+.voile-dessin { display: block; margin: 0 auto 8px; }
+.voile-dessin .eclat { transform-origin: 100px 76px; animation: eclat 1.2s ease-in-out infinite alternate; }
+@keyframes eclat { from { transform: scale(.9) rotate(-4deg); } to { transform: scale(1.05) rotate(4deg); } }
 .voile-titre { font-size: 36px; font-weight: 900; margin: 0 0 8px; }
 .voile-texte { font-size: 18px; font-weight: 700; margin: 0; line-height: 1.4; }
 
@@ -155,7 +253,7 @@ input:focus { border-color: var(--bleu); }
 .resultats span { font-size: 13px; opacity: .8; }
 
 /* ---------- Messages ---------- */
-.toasts { position: fixed; left: 0; right: 0; top: calc(10px + env(safe-area-inset-top)); display: flex; flex-direction: column; align-items: center; gap: 6px; pointer-events: none; z-index: 20; }
+.toasts { position: fixed; left: 0; right: 0; bottom: calc(16px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; align-items: center; gap: 6px; pointer-events: none; z-index: 20; }
 .toast { background: var(--vert); color: var(--bleu); font-weight: 800; padding: 10px 16px; border-radius: 99px; box-shadow: 0 4px 14px rgba(18, 38, 170, .18); animation: toast 2.2s forwards; max-width: 90%; text-align: center; }
 .toast.niveau { background: var(--corail); }
 @keyframes toast { 0% { opacity: 0; transform: translateY(-8px); } 10%, 80% { opacity: 1; transform: none; } 100% { opacity: 0; } }

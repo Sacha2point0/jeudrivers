@@ -9,6 +9,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const { Salle } = require('./src/salle');
+const COMMANDES = require('./content/commandes');
 
 const PORT = process.env.PORT || 3000;
 const PUBLIC = path.join(__dirname, 'public');
@@ -156,6 +157,13 @@ const serveur = http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://localhost');
   try {
     if (url.pathname === '/sante') return json(res, 200, { ok: true, salles: salles.size });
+    // Catalogue des commandes, pour la page de démonstration /atelier.html
+    if (url.pathname === '/api/commandes') {
+      return json(res, 200, COMMANDES.map((c) => ({
+        id: c.id, nom: c.nom, type: c.type, bouton: c.bouton, valeur: c.initial,
+        valeurs: c.valeurs && c.valeurs.map((v) => ({ id: v.id, label: v.label })),
+      })));
+    }
     if (url.pathname.startsWith('/api/')) return await api(req, res, url);
     if (req.method !== 'GET' && req.method !== 'HEAD') return json(res, 405, { erreur: 'Méthode non autorisée.' });
     return servirFichier(req, res, url.pathname === '/' ? '/index.html' : decodeURIComponent(url.pathname));

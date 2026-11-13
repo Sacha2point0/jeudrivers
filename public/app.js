@@ -153,7 +153,12 @@
   function rendreJeu(v) {
     afficher('jeu');
     const p = v.partie;
-    $('jeu-vies').textContent = '❤️'.repeat(p.vies) + '🤍'.repeat(Math.max(0, p.viesMax - p.vies));
+    const vies = Array.from({ length: p.viesMax }, (_, i) => COEUR(i < p.vies)).join('');
+    if ($('jeu-vies').dataset.vies !== String(p.vies)) {
+      $('jeu-vies').dataset.vies = p.vies;
+      $('jeu-vies').innerHTML = vies;
+    }
+    rendreVoiture(v.voiture || {});
     $('jeu-score').textContent = p.score;
     $('jeu-vitesse').textContent = p.vitesse;
     $('jeu-distance').textContent = formaterDistance(p.distance);
@@ -166,7 +171,8 @@
     $('voile-accident').hidden = !accident;
     if (accident && !enAccident) {
       vibrer([200, 80, 200]);
-      route.classList.remove('choc'); void route.offsetWidth; route.classList.add('choc');
+      const ecran = $('ecran-jeu');
+      ecran.classList.remove('secousse'); void ecran.offsetWidth; ecran.classList.add('secousse');
     }
     enAccident = accident;
 
@@ -191,62 +197,44 @@
     rendreCommandes(v.commandes);
   }
 
+  let widgets = {};
+
   function rendreCommandes(commandes) {
     const zone = $('commandes');
     const signature = commandes.map((c) => c.id).join(',');
     if (signature !== signatureCommandes) {
       signatureCommandes = signature;
-      zone.replaceChildren(...commandes.map(creerCommande));
+      widgets = {};
+      zone.dataset.n = commandes.length;
+      zone.replaceChildren(...commandes.map((c) => {
+        const bloc = document.createElement('div');
+        bloc.className = 'commande';
+        bloc.dataset.commande = c.id;
+        const titre = document.createElement('p');
+        titre.className = 'commande-nom';
+        titre.textContent = c.nom;
+        const w = Widgets.creer(c, (valeur) => agir(c.id, valeur));
+        widgets[c.id] = w;
+        bloc.append(titre, w.el);
+        return bloc;
+      }));
     }
-    for (const c of commandes) {
-      if (c.type !== 'choix') continue;
-      zone.querySelectorAll(`[data-commande="${c.id}"] .position`).forEach((b) => {
-        b.classList.toggle('active', b.dataset.valeur === c.valeur);
-      });
-    }
+    for (const c of commandes) if (c.type === 'choix' && widgets[c.id]) widgets[c.id].maj(c.valeur);
   }
 
-  function creerCommande(c) {
-    const bloc = document.createElement('div');
-    bloc.className = 'commande';
-    bloc.dataset.commande = c.id;
-    const titre = document.createElement('p');
-    titre.className = 'commande-nom';
-    titre.innerHTML = '<span class="icone"></span><span class="nom"></span>';
-    titre.querySelector('.icone').textContent = c.icone;
-    titre.querySelector('.nom').textContent = c.nom;
-    bloc.append(titre);
-
-    if (c.type === 'choix') {
-      const grille = document.createElement('div');
-      grille.className = 'positions';
-      for (const v of c.valeurs) {
-        const b = document.createElement('button');
-        b.type = 'button';
-        b.className = 'position';
-        b.dataset.valeur = v.id;
-        b.textContent = v.label;
-        b.addEventListener('click', () => {
-          grille.querySelectorAll('.position').forEach((x) => x.classList.toggle('active', x === b));
-          agir(c.id, v.id);
-        });
-        grille.append(b);
-      }
-      bloc.append(grille);
-    } else {
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'action';
-      b.textContent = c.bouton;
-      b.addEventListener('click', () => {
-        b.classList.add('presse');
-        setTimeout(() => b.classList.remove('presse'), 180);
-        agir(c.id, null);
-      });
-      bloc.append(b);
-    }
-    return bloc;
+  // La voiture sur la route suit le volant, le clignotant, les phares et les warnings.
+  const DECALAGE_VOLANT = { gauche_toute: [-30, -16], gauche: [-14, -7], droit: [0, 0], droite: [14, 7], droite_toute: [30, 16] };
+  function rendreVoiture(etat) {
+    const voiture = $('voiture');
+    const [x, a] = DECALAGE_VOLANT[etat.volant] || [0, 0];
+    voiture.style.transform = `translateX(${x}px) rotate(${a}deg)`;
+    voiture.classList.toggle('cligno-gauche', etat.clignotant === 'gauche' || etat.warnings === 'on');
+    voiture.classList.toggle('cligno-droite', etat.clignotant === 'droite' || etat.warnings === 'on');
+    voiture.classList.toggle('codes', etat.phares === 'codes');
+    voiture.classList.toggle('pleins', etat.phares === 'pleins');
   }
+
+  const COEUR = (plein) => `<svg viewBox="0 0 24 22" width="24" height="22" aria-hidden="true"><path d="M12 21 C5 15 1 11.5 1 7 A5.5 5.5 0 0 1 12 4.5 A5.5 5.5 0 0 1 23 7 C23 11.5 19 15 12 21 Z" fill="${plein ? '#FF8672' : '#E8EBF8'}" stroke="#1226AA" stroke-width="1.6"/></svg>`;
 
   function agir(commande, valeur) {
     vibrer(15);
@@ -281,7 +269,11 @@
     for (const e of evenements) {
       if (e.num <= dernierEvenement) continue;
       if (e.type === 'accident') $('voile-texte').textContent = e.texte;
-      else if (e.type === 'reussite') toast(e.texte);
+      else if (e.type === 'reussite') {
+        toast(e.texte);
+        const bloc = $('consigne');
+        bloc.classList.remove('bravo'); void bloc.offsetWidth; bloc.classList.add('bravo');
+      }
       else if (e.type === 'niveau' || e.type === 'depart') toast(e.texte, 'niveau');
     }
     dernierEvenement = dernier;

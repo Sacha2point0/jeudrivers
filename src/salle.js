@@ -326,6 +326,12 @@ class Salle {
       joue: p.joueurs.includes(jid),
     };
 
+    // L'état visible de la voiture, dessiné sur la route de tous les joueurs.
+    vue.voiture = {};
+    for (const cid of ['volant', 'clignotant', 'phares', 'warnings']) {
+      if (cid in p.etat) vue.voiture[cid] = p.etat[cid];
+    }
+
     vue.commandes = this.commandesDe(jid).map((cid) => {
       const c = PAR_ID.get(cid);
       return {
