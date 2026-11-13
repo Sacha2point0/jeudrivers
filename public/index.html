@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#1226AA">
+  <title>En voiture ! · Le permis de manager</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <main id="app">
+
+    <!-- Accueil -->
+    <section id="ecran-accueil" class="ecran">
+      <header class="titre">
+        <p class="surtitre">Le permis de manager</p>
+        <h1>En voiture !</h1>
+        <p class="accroche">Vous êtes l'équipage d'une même voiture. Chacun a des commandes, mais les consignes arrivent… sur le téléphone des autres.</p>
+      </header>
+
+      <form id="form-accueil" class="carte" autocomplete="off">
+        <label for="nom">Ton prénom</label>
+        <input id="nom" name="nom" maxlength="20" required placeholder="Ex. Fanja">
+
+        <div class="separateur"><span>Rejoindre une partie</span></div>
+        <label for="code">Code de la partie</label>
+        <input id="code" name="code" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" placeholder="4 chiffres">
+        <button type="submit" class="bouton bouton-principal" data-action="rejoindre">Rejoindre</button>
+
+        <div class="separateur"><span>ou</span></div>
+        <button type="submit" class="bouton bouton-secondaire" data-action="creer">Créer une nouvelle partie</button>
+        <p id="erreur-accueil" class="erreur" role="alert"></p>
+      </form>
+    </section>
+
+    <!-- Salle d'attente -->
+    <section id="ecran-attente" class="ecran" hidden>
+      <header class="titre">
+        <p class="surtitre">Code de la partie</p>
+        <p id="attente-code" class="code-geant">····</p>
+        <p class="aide">Les autres joueurs saisissent ce code sur <strong id="attente-adresse"></strong></p>
+      </header>
+
+      <div class="carte">
+        <h2>L'équipage <span id="attente-compte" class="pastille"></span></h2>
+        <ul id="attente-joueurs" class="liste-joueurs"></ul>
+      </div>
+
+      <div class="carte regles">
+        <h2>Comment on joue</h2>
+        <ol>
+          <li>Ton écran affiche <strong>tes commandes</strong> : toi seul peux les actionner.</li>
+          <li>En haut, une <strong>consigne</strong> apparaît. Elle concerne presque toujours la commande de quelqu'un d'autre : <strong>crie-la</strong> à l'équipage !</li>
+          <li>Si la consigne n'est pas exécutée avant la fin du chrono : accident. 3 accidents et la route s'arrête.</li>
+          <li>Plus vous réussissez, plus la voiture accélère.</li>
+        </ol>
+      </div>
+
+      <button id="bouton-lancer" class="bouton bouton-principal" hidden>Démarrer la voiture</button>
+      <p id="attente-message" class="aide centre"></p>
+      <p id="erreur-attente" class="erreur" role="alert"></p>
+      <button id="bouton-quitter" class="lien">Quitter la partie</button>
+    </section>
+
+    <!-- Jeu -->
+    <section id="ecran-jeu" class="ecran ecran-jeu" hidden>
+      <div class="tableau">
+        <span id="jeu-vies" class="vies" aria-label="Vies"></span>
+        <span class="stat"><strong id="jeu-score">0</strong> pts</span>
+        <span class="stat"><strong id="jeu-vitesse">40</strong> km/h</span>
+      </div>
+
+      <div id="route" class="route" aria-hidden="true">
+        <div class="route-bande"></div>
+        <svg class="voiture" viewBox="0 0 40 70" width="34" height="60">
+          <rect x="4" y="4" width="32" height="62" rx="10" fill="#FF8672"/>
+          <rect x="9" y="14" width="22" height="12" rx="3" fill="#1226AA" opacity=".85"/>
+          <rect x="9" y="46" width="22" height="9" rx="3" fill="#1226AA" opacity=".6"/>
+          <rect x="1" y="12" width="4" height="10" rx="2" fill="#1226AA"/>
+          <rect x="35" y="12" width="4" height="10" rx="2" fill="#1226AA"/>
+          <rect x="1" y="48" width="4" height="10" rx="2" fill="#1226AA"/>
+          <rect x="35" y="48" width="4" height="10" rx="2" fill="#1226AA"/>
+        </svg>
+        <span id="jeu-distance" class="distance">0 m</span>
+      </div>
+
+      <div id="consigne" class="consigne vide">
+        <p class="consigne-etiquette">À crier à l'équipage</p>
+        <p id="consigne-texte" class="consigne-texte">Regarde la route…</p>
+        <div class="chrono"><div id="chrono-barre" class="chrono-barre"></div></div>
+      </div>
+
+      <p class="etiquette-commandes">Tes commandes</p>
+      <div id="commandes" class="commandes"></div>
+
+      <div id="voile-accident" class="voile" hidden>
+        <div class="voile-contenu">
+          <p class="voile-icone">💥</p>
+          <p class="voile-titre">Accident !</p>
+          <p id="voile-texte" class="voile-texte"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Fin -->
+    <section id="ecran-fin" class="ecran" hidden>
+      <header class="titre">
+        <p class="surtitre">Fin de la route</p>
+        <h1 id="fin-score">0 pts</h1>
+      </header>
+      <div class="carte resultats">
+        <div><strong id="fin-distance">0</strong><span>mètres parcourus</span></div>
+        <div><strong id="fin-reussites">0</strong><span>consignes réussies</span></div>
+        <div><strong id="fin-niveau">1</strong><span>niveau atteint</span></div>
+        <div><strong id="fin-duree">0</strong><span>de conduite</span></div>
+      </div>
+      <div class="carte">
+        <h2>Pour en parler</h2>
+        <ul class="questions">
+          <li>Qu'est-ce qui vous a aidés à vous coordonner ?</li>
+          <li>À quel moment ça a déraillé ? Qu'est-ce qui s'est passé ?</li>
+          <li>Qui a pris le rôle de chef d'orchestre ? Était-ce nécessaire ?</li>
+        </ul>
+      </div>
+      <button id="bouton-rejouer" class="bouton bouton-principal" hidden>Reprendre la route</button>
+      <p id="fin-message" class="aide centre"></p>
+      <p id="erreur-fin" class="erreur" role="alert"></p>
+      <button id="bouton-quitter-fin" class="lien">Quitter la partie</button>
+    </section>
+
+  </main>
+
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+  <script src="/app.js"></script>
+</body>
+</html>

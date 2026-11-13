@@ -1,0 +1,16 @@
+{
+  "name": "jeudrivers",
+  "version": "0.1.0",
+  "private": true,
+  "description": "En voiture ! Jeu de coordination en équipe sur téléphone (Le permis de manager, séminaire Sogea-Satom).",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "simulation": "node tools/simulation.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "UNLICENSED"
+}
