@@ -153,10 +153,14 @@
   function rendreJeu(v) {
     afficher('jeu');
     const p = v.partie;
-    const vies = Array.from({ length: p.viesMax }, (_, i) => COEUR(i < p.vies)).join('');
-    if ($('jeu-vies').dataset.vies !== String(p.vies)) {
+    // Avec une seule vie, on affiche le record de la salle à la place des cœurs.
+    const uneVie = p.viesMax <= 1;
+    $('jeu-vies').hidden = uneVie;
+    $('jeu-record').hidden = !uneVie;
+    $('jeu-record-score').textContent = v.record ? v.record.score : '–';
+    if (!uneVie && $('jeu-vies').dataset.vies !== String(p.vies)) {
       $('jeu-vies').dataset.vies = p.vies;
-      $('jeu-vies').innerHTML = vies;
+      $('jeu-vies').innerHTML = Array.from({ length: p.viesMax }, (_, i) => COEUR(i < p.vies)).join('');
     }
     rendreVoiture(v.voiture || {});
     $('jeu-score').textContent = p.score;
@@ -255,8 +259,14 @@
       $('fin-niveau').textContent = p.niveau;
       $('fin-duree').textContent = formaterDuree(p.duree);
     }
-    $('bouton-rejouer').hidden = !v.moi.hote;
-    $('fin-message').textContent = v.moi.hote ? '' : 'L’hôte peut relancer une partie.';
+    $('fin-cause').textContent = p && p.cause ? `Accident : ${p.cause}` : '';
+    const record = p && p.record && v.essais > 1;
+    $('fin-record').hidden = !(p && v.record);
+    $('fin-record').textContent = record
+      ? 'Nouveau record de l’équipage !'
+      : (v.record ? `Record de l’équipage : ${v.record.score} pts · essai n° ${v.essais}` : '');
+    $('fin-record').classList.toggle('nouveau', !!record);
+    $('fin-message').textContent = 'N’importe qui peut relancer : dites-vous quand vous êtes prêts.';
   }
 
   // ---------- Événements, chrono, utilitaires ----------

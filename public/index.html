@@ -54,7 +54,7 @@
         <ol>
           <li>Ton écran affiche <strong>tes commandes</strong> : toi seul peux les actionner.</li>
           <li>En haut, une <strong>consigne</strong> apparaît. Elle concerne presque toujours la commande de quelqu'un d'autre : <strong>crie-la</strong> à l'équipage !</li>
-          <li>Si la consigne n'est pas exécutée avant la fin du chrono : accident. 3 accidents et la route s'arrête.</li>
+          <li>Si la consigne n'est pas exécutée avant la fin du chrono : accident, et la route s'arrête. Vous pouvez relancer autant de fois que vous voulez pour battre votre record.</li>
           <li>Plus vous réussissez, plus la voiture accélère.</li>
         </ol>
       </div>
@@ -69,6 +69,7 @@
     <section id="ecran-jeu" class="ecran ecran-jeu" hidden>
       <div class="tableau">
         <span id="jeu-vies" class="vies" aria-label="Vies"></span>
+        <span id="jeu-record" class="stat record" hidden>Record <strong id="jeu-record-score">0</strong></span>
         <span class="stat"><strong id="jeu-score">0</strong> pts</span>
         <span class="stat"><strong id="jeu-vitesse">40</strong> km/h</span>
       </div>
@@ -125,7 +126,10 @@
       <header class="titre">
         <p class="surtitre">Fin de la route</p>
         <h1 id="fin-score">0 pts</h1>
+        <p id="fin-record" class="badge-record" hidden></p>
+        <p id="fin-cause" class="accroche"></p>
       </header>
+      <button id="bouton-rejouer" class="bouton bouton-principal">Reprendre la route</button>
       <div class="carte resultats">
         <div><strong id="fin-distance">0</strong><span>mètres parcourus</span></div>
         <div><strong id="fin-reussites">0</strong><span>consignes réussies</span></div>
@@ -140,7 +144,6 @@
           <li>Qui a pris le rôle de chef d'orchestre ? Était-ce nécessaire ?</li>
         </ul>
       </div>
-      <button id="bouton-rejouer" class="bouton bouton-principal" hidden>Reprendre la route</button>
       <p id="fin-message" class="aide centre"></p>
       <p id="erreur-fin" class="erreur" role="alert"></p>
       <button id="bouton-quitter-fin" class="lien">Quitter la partie</button>

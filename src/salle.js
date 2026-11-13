@@ -37,6 +37,8 @@ class Salle {
     this.derniereActivite = Date.now();
     this.partie = null;
     this.sale = false;
+    this.record = null; // meilleur score de l'équipage dans cette salle
+    this.essais = 0;
   }
 
   // ---------- Joueurs ----------
@@ -100,8 +102,9 @@ class Salle {
   // ---------- Partie ----------
 
   lancer(id) {
-    if (!this.estHote(id)) throw new Error("Seul l'hôte peut lancer la partie.");
-    if (this.phase === 'jeu') return;
+    if (this.phase === 'jeu') return; // déjà relancée par un autre joueur
+    // Au départ, l'hôte lance ; après un accident, n'importe qui peut relancer.
+    if (this.phase !== 'fin' && !this.estHote(id)) throw new Error("Seul l'hôte peut lancer la partie.");
     const presents = this.ordre.filter((x) => this.enLigne(this.joueurs.get(x)));
     if (presents.length < REGLES.joueursMin) throw new Error(`Il faut au moins ${REGLES.joueursMin} joueurs connectés.`);
 
@@ -194,10 +197,15 @@ class Salle {
     p.accidents += 1;
     p.consignes.clear();
     // On ne nomme personne : l'accident est celui de l'équipage.
-    this.evenement('accident', `« ${consigne.texte} » n'a pas été fait à temps.`);
+    const cause = `« ${consigne.texte} » n'a pas été fait à temps.`;
+    this.evenement('accident', cause);
     if (p.vies <= 0) {
       this.phase = 'fin';
       p.fin = maintenant;
+      p.cause = cause;
+      p.record = !this.record || p.score > this.record.score;
+      if (p.record) this.record = { score: p.score, distance: Math.round(p.distance) };
+      this.essais += 1;
       this.evenement('fin', 'Fin de la route.');
       return;
     }
@@ -324,7 +332,11 @@ class Salle {
       duree: Math.round(((p.fin || maintenant) - p.debut) / 1000),
       accident: Math.max(0, p.accidentJusqua - maintenant),
       joue: p.joueurs.includes(jid),
+      cause: p.cause || null,
+      record: !!p.record,
     };
+    vue.record = this.record;
+    vue.essais = this.essais;
 
     // L'état visible de la voiture, dessiné sur la route de tous les joueurs.
     vue.voiture = {};

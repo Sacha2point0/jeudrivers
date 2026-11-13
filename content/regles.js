@@ -4,7 +4,9 @@
 module.exports = {
   joueursMin: 2,
   joueursMax: 15,
-  vies: 3,
+  // Une seule vie : le premier accident arrête la route, et l'équipage
+  // peut relancer autant qu'il veut (le record de la salle est gardé).
+  vies: 1,
 
   // Commandes par joueur selon la taille de l'équipage.
   commandesParJoueur(nbJoueurs) {

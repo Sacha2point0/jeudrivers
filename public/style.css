@@ -248,6 +248,9 @@ input:focus { border-color: var(--bleu); }
 .voile-texte { font-size: 18px; font-weight: 700; margin: 0; line-height: 1.4; }
 
 /* ---------- Fin ---------- */
+.record strong { font-size: 18px; }
+.badge-record { display: inline-block; margin: 0 0 10px; background: var(--bleu-clair); border-radius: 99px; padding: 6px 14px; font-weight: 800; }
+.badge-record.nouveau { background: var(--vert); }
 .resultats { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; text-align: center; }
 .resultats strong { display: block; font-size: 28px; font-weight: 900; }
 .resultats span { font-size: 13px; opacity: .8; }
