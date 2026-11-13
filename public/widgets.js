@@ -23,10 +23,15 @@ window.Widgets = (() => {
   const rad = (deg) => (deg * Math.PI) / 180;
 
   // Coordonnées d'un clic dans le repère du viewBox.
+  // On passe par la matrice de l'écran : le dessin est centré dans la zone
+  // (marges à gauche et à droite sur un écran large), un simple calcul
+  // proportionnel sur la largeur de l'élément tombait à côté.
   function point(svg, e) {
-    const r = svg.getBoundingClientRect();
-    const vb = svg.viewBox.baseVal;
-    return { x: ((e.clientX - r.left) / r.width) * vb.width, y: ((e.clientY - r.top) / r.height) * vb.height };
+    const p = svg.createSVGPoint();
+    p.x = e.clientX;
+    p.y = e.clientY;
+    const m = svg.getScreenCTM();
+    return m ? p.matrixTransform(m.inverse()) : { x: 0, y: 0 };
   }
 
   // Déplace un élément SVG (attribut transform) avec une petite animation.
