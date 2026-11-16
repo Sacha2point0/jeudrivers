@@ -153,16 +153,19 @@
   function rendreJeu(v) {
     afficher('jeu');
     const p = v.partie;
-    // Avec une seule vie, on affiche le record de la salle à la place des cœurs.
+    // Avec une seule vie, on affiche le record de la salle à la place de l'état de la voiture.
     const uneVie = p.viesMax <= 1;
     $('jeu-vies').hidden = uneVie;
     $('jeu-record').hidden = !uneVie;
     $('jeu-record-score').textContent = v.record ? v.record.score : '–';
-    if (!uneVie && $('jeu-vies').dataset.vies !== String(p.vies)) {
-      $('jeu-vies').dataset.vies = p.vies;
-      $('jeu-vies').innerHTML = Array.from({ length: p.viesMax }, (_, i) => COEUR(i < p.vies)).join('');
+    if (!uneVie && $('jeu-vies').dataset.accidents !== String(p.accidents)) {
+      $('jeu-vies').dataset.accidents = p.accidents;
+      const jauge = etatVoiture(p.accidents, p.viesMax);
+      $('jeu-vies').innerHTML = '<span class="etat-libelle">État</span>' + jauge;
+      $('voile-etat').innerHTML = jauge;
+      $('jeu-vies').setAttribute('aria-label', `État de la voiture : ${p.accidents} accident${p.accidents > 1 ? 's' : ''} sur ${p.viesMax}`);
     }
-    rendreVoiture(v.voiture || {});
+    rendreVoiture(v.voiture || {}, p.accidents);
     $('jeu-score').textContent = p.score;
     $('jeu-vitesse').textContent = p.vitesse;
     $('jeu-distance').textContent = formaterDistance(p.distance);
@@ -175,7 +178,11 @@
     $('voile-accident').hidden = !accident;
     if (accident) {
       $('voile-texte').textContent = p.messageAccident;
-      $('voile-suite').textContent = p.perdu ? 'La route s’arrête ici.' : 'On repart dans un instant…';
+      const restants = p.viesMax - p.accidents;
+      $('voile-compte').textContent = p.perdu
+        ? `${p.accidents}e accident : la voiture est hors d’usage.`
+        : `Accident ${p.accidents} sur ${p.viesMax} · encore ${restants} avant l’arrêt`;
+      $('voile-suite').textContent = p.perdu ? 'La route s’arrête ici.' : 'La voiture est abîmée, mais on repart dans un instant…';
     }
     if (accident && !enAccident) {
       vibrer([200, 80, 200]);
@@ -232,8 +239,10 @@
 
   // La voiture sur la route suit le volant, le clignotant, les phares et les warnings.
   const DECALAGE_VOLANT = { gauche_toute: [-30, -16], gauche: [-14, -7], droit: [0, 0], droite: [14, 7], droite_toute: [30, 16] };
-  function rendreVoiture(etat) {
+  function rendreVoiture(etat, accidents = 0) {
     const voiture = $('voiture');
+    // À chaque accident, la voiture s'abîme un peu plus (dégâts dessinés dans index.html).
+    for (let i = 1; i <= 3; i++) voiture.classList.toggle('degat-' + i, accidents >= i);
     const [x, a] = DECALAGE_VOLANT[etat.volant] || [0, 0];
     voiture.style.transform = `translateX(${x}px) rotate(${a}deg)`;
     voiture.classList.toggle('cligno-gauche', etat.clignotant === 'gauche' || etat.warnings === 'on');
@@ -241,6 +250,14 @@
     voiture.classList.toggle('codes', etat.phares === 'codes');
     voiture.classList.toggle('pleins', etat.phares === 'pleins');
   }
+
+  // Jauge d'état : une petite voiture par vie, cabossée une fois l'accident passé.
+  function etatVoiture(accidents, max) {
+    return Array.from({ length: max }, (_, i) => MINI_VOITURE(i < accidents)).join('');
+  }
+  const MINI_VOITURE = (casse) => casse
+    ? '<svg class="mini casse" viewBox="0 0 18 26" width="16" height="23" aria-hidden="true"><g transform="rotate(14 9 13)"><rect x="2" y="2" width="14" height="22" rx="5" fill="#FFE7E2" stroke="#1226AA" stroke-width="1.6"/><path d="M5 6 L9 11 L7 15 L11 20" fill="none" stroke="#FF8672" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g></svg>'
+    : '<svg class="mini" viewBox="0 0 18 26" width="16" height="23" aria-hidden="true"><rect x="2" y="2" width="14" height="22" rx="5" fill="#3BD4AE" stroke="#1226AA" stroke-width="1.6"/><rect x="4.5" y="7" width="9" height="5" rx="1.5" fill="#1226AA"/></svg>';
 
   const COEUR = (plein) => `<svg viewBox="0 0 24 22" width="24" height="22" aria-hidden="true"><path d="M12 21 C5 15 1 11.5 1 7 A5.5 5.5 0 0 1 12 4.5 A5.5 5.5 0 0 1 23 7 C23 11.5 19 15 12 21 Z" fill="${plein ? '#FF8672' : '#E8EBF8'}" stroke="#1226AA" stroke-width="1.6"/></svg>`;
 
@@ -255,6 +272,7 @@
     signatureCommandes = '';
     numConsigne = null;
     enAccident = false;
+    $('jeu-vies').dataset.accidents = '';
     const p = v.partie;
     if (p) {
       $('fin-score').textContent = `${p.score} pts`;

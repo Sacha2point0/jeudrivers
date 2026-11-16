@@ -39,6 +39,7 @@ class Salle {
     this.sale = false;
     this.record = null; // meilleur score de l'équipage dans cette salle
     this.essais = 0;
+    this.attribution = null; // joueur -> commandes, gardée d'une partie à l'autre
   }
 
   // ---------- Joueurs ----------
@@ -108,19 +109,12 @@ class Salle {
     const presents = this.ordre.filter((x) => this.enLigne(this.joueurs.get(x)));
     if (presents.length < REGLES.joueursMin) throw new Error(`Il faut au moins ${REGLES.joueursMin} joueurs connectés.`);
 
-    // Distribution des commandes : on prend les premières de la liste,
-    // on les mélange et on les distribue à tour de rôle.
-    const parJoueur = REGLES.commandesParJoueur(presents.length);
-    const nb = Math.min(COMMANDES.length, presents.length * parJoueur);
-    const choisies = melanger(COMMANDES.slice(0, nb).map((c) => c.id));
-    const proprietaire = {};
+    const proprietaire = this.distribuer(presents);
     const etat = {};
-    const ordreJoueurs = melanger(presents);
-    choisies.forEach((cid, i) => {
-      proprietaire[cid] = ordreJoueurs[i % ordreJoueurs.length];
+    for (const cid of Object.keys(proprietaire)) {
       const c = PAR_ID.get(cid);
       if (c.type === 'choix') etat[cid] = c.initial;
-    });
+    }
 
     const maintenant = Date.now();
     const pause = {};
@@ -149,6 +143,39 @@ class Salle {
     this.evenements = [];
     this.evenement('depart', 'Attachez vos ceintures, c’est parti !');
     this.signaler();
+  }
+
+  /*
+   * Distribution des commandes : on prend les premières de la liste.
+   * Décision de Sacha du 16/11/2026 : d'une partie à l'autre, chacun garde ses
+   * commandes. Seules celles d'un joueur parti, ou nécessaires à un nouveau
+   * venu, sont redistribuées (au joueur qui en a le moins).
+   */
+  distribuer(presents) {
+    const parJoueur = REGLES.commandesParJoueur(presents.length);
+    const nb = Math.min(COMMANDES.length, presents.length * parJoueur);
+    const pool = COMMANDES.slice(0, nb).map((c) => c.id);
+    const proprietaire = {};
+    const compte = Object.fromEntries(presents.map((jid) => [jid, 0]));
+    const avant = this.attribution || {};
+    for (const jid of presents) {
+      for (const cid of avant[jid] || []) {
+        if (pool.includes(cid) && !proprietaire[cid] && compte[jid] < parJoueur) {
+          proprietaire[cid] = jid;
+          compte[jid] += 1;
+        }
+      }
+    }
+    for (const cid of melanger(pool.filter((c) => !proprietaire[c]))) {
+      const min = Math.min(...presents.map((jid) => compte[jid]));
+      const candidats = presents.filter((jid) => compte[jid] === min);
+      const jid = candidats[Math.floor(Math.random() * candidats.length)];
+      proprietaire[cid] = jid;
+      compte[jid] += 1;
+    }
+    this.attribution = {};
+    for (const [cid, jid] of Object.entries(proprietaire)) (this.attribution[jid] ||= []).push(cid);
+    return proprietaire;
   }
 
   commandesDe(jid) {

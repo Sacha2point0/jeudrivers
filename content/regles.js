@@ -4,9 +4,10 @@
 module.exports = {
   joueursMin: 2,
   joueursMax: 15,
-  // Une seule vie : le premier accident arrête la route, et l'équipage
-  // peut relancer autant qu'il veut (le record de la salle est gardé).
-  vies: 1,
+  // Quatre vies (décision de Sacha du 16/11/2026) : les 3 premiers accidents
+  // abîment la voiture mais la route continue ; le 4e arrête la partie.
+  // L'équipage peut relancer autant qu'il veut (le record de la salle est gardé).
+  vies: 4,
 
   // Commandes par joueur selon la taille de l'équipage.
   commandesParJoueur(nbJoueurs) {

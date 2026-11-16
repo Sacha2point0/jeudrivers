@@ -54,7 +54,7 @@
         <ol>
           <li>Ton écran affiche <strong>tes commandes</strong> : toi seul peux les actionner.</li>
           <li>En haut, une <strong>consigne</strong> apparaît. Elle concerne presque toujours la commande de quelqu'un d'autre : <strong>crie-la</strong> à l'équipage !</li>
-          <li>Si la consigne n'est pas exécutée avant la fin du chrono : accident, et la route s'arrête. Vous pouvez relancer autant de fois que vous voulez pour battre votre record.</li>
+          <li>Si la consigne n'est pas exécutée avant la fin du chrono : accident ! La voiture s'abîme mais repart. Au <strong>4<sup>e</sup> accident</strong>, la route s'arrête. Vous pouvez relancer autant de fois que vous voulez pour battre votre record.</li>
           <li>Plus vous réussissez, plus la voiture accélère.</li>
         </ol>
       </div>
@@ -68,7 +68,7 @@
     <!-- Jeu -->
     <section id="ecran-jeu" class="ecran ecran-jeu" hidden>
       <div class="tableau">
-        <span id="jeu-vies" class="vies" aria-label="Vies"></span>
+        <span id="jeu-vies" class="vies" aria-label="État de la voiture"></span>
         <span id="jeu-record" class="stat record" hidden>Record <strong id="jeu-record-score">0</strong></span>
         <span class="stat"><strong id="jeu-score">0</strong> pts</span>
         <span class="stat"><strong id="jeu-vitesse">40</strong> km/h</span>
@@ -81,7 +81,8 @@
         <svg id="voiture" class="voiture" viewBox="-14 -60 72 140" width="54" height="105">
           <polygon class="faisceau" points="4,0 14,0 2,-60 -14,-60" fill="#fff"/>
           <polygon class="faisceau" points="30,0 40,0 58,-60 42,-60" fill="#fff"/>
-          <rect x="2" y="2" width="40" height="74" rx="13" fill="#FF8672" stroke="#1226AA" stroke-width="3"/>
+          <g class="caisse">
+          <rect class="carrosserie" x="2" y="2" width="40" height="74" rx="13" fill="#FF8672" stroke="#1226AA" stroke-width="3"/>
           <rect x="8" y="18" width="28" height="15" rx="4" fill="#1226AA"/>
           <rect x="9" y="56" width="26" height="9" rx="3" fill="#1226AA" opacity=".7"/>
           <rect x="10" y="38" width="24" height="14" rx="3" fill="#fff" opacity=".35"/>
@@ -89,6 +90,46 @@
           <rect class="feu gauche" x="0" y="67" width="8" height="7" rx="2"/>
           <rect class="feu droite" x="36" y="4" width="8" height="7" rx="2"/>
           <rect class="feu droite" x="36" y="67" width="8" height="7" rx="2"/>
+          <!-- Dégâts : 1er accident -->
+          <g class="degat d1" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M13 19 L19 25 L16 31 M19 25 L28 21 M19 25 L26 32" stroke="#fff" stroke-width="1.3"/>
+            <path d="M3 36 L9 41 L4 46 L9 52" stroke="#1226AA" stroke-width="2.4"/>
+            <path d="M30 40 L38 44 M31 45 L39 49" stroke="#fff" stroke-width="2"/>
+          </g>
+          <!-- Dégâts : 2e accident (aile avant enfoncée, phare cassé, fumée) -->
+          <g class="degat d2">
+            <path d="M2 15 L2 9 Q3 3 9 2 L15 2 L12 6 L15 9 L9 10 L7 15 Z" fill="#FFE7E2" stroke="#1226AA" stroke-width="2.2" stroke-linejoin="round"/>
+            <path d="M1 5 L7 10 M7 5 L1 10" stroke="#1226AA" stroke-width="1.8" stroke-linecap="round"/>
+            <circle cx="22" cy="6" r="4" fill="#fff" opacity=".9">
+              <animate attributeName="cy" values="8;-16" dur="1.6s" repeatCount="indefinite"/>
+              <animate attributeName="r" values="4;13" dur="1.6s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values=".95;0" dur="1.6s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="18" cy="6" r="3" fill="#fff" opacity=".9">
+              <animate attributeName="cy" values="8;-14" dur="1.6s" begin=".8s" repeatCount="indefinite"/>
+              <animate attributeName="r" values="3;11" dur="1.6s" begin=".8s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values=".9;0" dur="1.6s" begin=".8s" repeatCount="indefinite"/>
+            </circle>
+          </g>
+          <!-- Dégâts : 3e accident (arrière plié, toit cabossé, feu arraché, pare-chocs qui traîne, grosse fumée) -->
+          <g class="degat d3">
+            <rect x="6" y="74" width="26" height="6" rx="3" fill="#FFE7E2" stroke="#1226AA" stroke-width="2" transform="rotate(16 8 77)"/>
+            <path d="M42 62 L42 68 Q41 75 35 76 L28 76 L31 72 L28 69 L35 68 L37 62 Z" fill="#FFE7E2" stroke="#1226AA" stroke-width="2.2" stroke-linejoin="round"/>
+            <rect x="36" y="67" width="8" height="7" rx="2" fill="#1226AA"/>
+            <path d="M13 41 Q18 46 24 40 Q28 45 32 41" fill="none" stroke="#1226AA" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M14 57 L20 61 L17 64 M20 61 L29 58" fill="none" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/>
+            <circle cx="30" cy="4" r="5" fill="#fff" opacity=".8">
+              <animate attributeName="cy" values="6;-22" dur="1.3s" repeatCount="indefinite"/>
+              <animate attributeName="r" values="5;17" dur="1.3s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values=".95;0" dur="1.3s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="14" cy="4" r="5" fill="#fff" opacity=".8">
+              <animate attributeName="cy" values="6;-20" dur="1.3s" begin=".65s" repeatCount="indefinite"/>
+              <animate attributeName="r" values="5;16" dur="1.3s" begin=".65s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values=".9;0" dur="1.3s" begin=".65s" repeatCount="indefinite"/>
+            </circle>
+          </g>
+          </g>
         </svg>
         <span id="jeu-distance" class="distance">0 m</span>
       </div>
@@ -116,6 +157,8 @@
             </g>
           </svg>
           <p class="voile-titre">Accident !</p>
+          <p id="voile-compte" class="voile-compte"></p>
+          <div id="voile-etat" class="vies etat-voile" aria-hidden="true"></div>
           <p id="voile-texte" class="voile-texte"></p>
           <p id="voile-suite" class="voile-suite"></p>
         </div>

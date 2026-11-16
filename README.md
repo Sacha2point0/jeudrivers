@@ -2,7 +2,7 @@
 
 Jeu de coordination en équipe sur téléphone, pour le séminaire « Le permis de manager » (Sogea-Satom, décembre 2026, WORKLAB).
 
-De 2 à 15 joueurs forment l'équipage d'une même voiture. Chacun a sur son téléphone des commandes que lui seul peut actionner (volant, clignotant, frein, boîte de vitesses, autoradio…). Les consignes s'affichent sur le téléphone **d'un autre** joueur, qui doit les crier à l'équipage. Une consigne non exécutée à temps provoque un accident ; le premier accident arrête la route, et l'équipage relance autant qu'il veut pour battre son record. Plus l'équipe réussit, plus la voiture accélère et plus le chrono se resserre.
+De 2 à 15 joueurs forment l'équipage d'une même voiture. Chacun a sur son téléphone des commandes que lui seul peut actionner (volant, clignotant, frein, boîte de vitesses, autoradio…). Les consignes s'affichent sur le téléphone **d'un autre** joueur, qui doit les crier à l'équipage. Une consigne non exécutée à temps provoque un accident : la voiture s'abîme mais repart, et le 4e accident arrête la route. L'équipage relance autant qu'il veut pour battre son record, chacun gardant les mêmes commandes d'une partie à l'autre. Plus l'équipe réussit, plus la voiture accélère et plus le chrono se resserre.
 
 ## Lancer en local
 

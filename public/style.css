@@ -81,7 +81,13 @@ input:focus { border-color: var(--bleu); }
 /* ---------- Jeu ---------- */
 .ecran-jeu { gap: 12px; padding-top: 12px; }
 .tableau { display: flex; justify-content: space-between; align-items: center; font-size: 16px; }
-.vies { display: flex; gap: 4px; }
+.vies { display: flex; gap: 4px; align-items: center; }
+.etat-libelle { font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: .08em; margin-right: 2px; }
+.vies .mini.casse { animation: casse .5s ease-out; }
+@keyframes casse { from { transform: scale(1.6); } to { transform: none; } }
+.etat-voile { justify-content: center; margin: 10px 0 14px; }
+.etat-voile .mini { width: 26px; height: 37px; }
+.voile-compte { font-size: 18px; font-weight: 900; margin: 0 0 4px; }
 .stat strong { font-size: 22px; font-weight: 900; }
 
 /* La route : chaussée bleue, bas-côtés avec des buissons qui défilent. */
@@ -121,6 +127,13 @@ input:focus { border-color: var(--bleu); }
 .voiture.pleins .faisceau { opacity: .5; }
 .voiture .feu { fill: #fff; stroke: var(--bleu); stroke-width: 1.5; }
 .voiture.cligno-gauche .feu.gauche, .voiture.cligno-droite .feu.droite { animation: cligne .8s steps(2, jump-none) infinite; }
+/* Dégâts : cachés tant que la voiture n'a pas eu l'accident correspondant. */
+.voiture .degat { display: none; }
+.voiture.degat-1 .d1, .voiture.degat-2 .d2, .voiture.degat-3 .d3 { display: inline; }
+.voiture.degat-2 .carrosserie { fill: #F7A090; }
+.voiture.degat-3 .carrosserie { fill: #EBA79B; }
+.voiture.degat-3 .caisse { transform-box: view-box; transform-origin: 22px 40px; animation: tangue .5s ease-in-out infinite alternate; }
+@keyframes tangue { from { transform: rotate(-3deg) translateX(-1px); } to { transform: rotate(3deg) translateX(1px); } }
 @keyframes cligne { 0% { fill: var(--vert); } 100% { fill: #fff; } }
 .distance {
   position: absolute; left: 8px; bottom: 8px; background: #fff; border-radius: 99px;
