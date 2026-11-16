@@ -241,8 +241,11 @@
   const DECALAGE_VOLANT = { gauche_toute: [-30, -16], gauche: [-14, -7], droit: [0, 0], droite: [14, 7], droite_toute: [30, 16] };
   function rendreVoiture(etat, accidents = 0) {
     const voiture = $('voiture');
-    // À chaque accident, la voiture s'abîme un peu plus (dégâts dessinés dans index.html).
-    for (let i = 1; i <= 3; i++) voiture.classList.toggle('degat-' + i, accidents >= i);
+    // À chaque accident, la voiture s'abîme un peu plus (3 niveaux de dégâts dessinés dans
+    // index.html, répartis sur les accidents qui laissent la route continuer).
+    const max = vue && vue.partie ? vue.partie.viesMax : 3;
+    const niveau = accidents ? Math.min(3, Math.ceil((accidents * 3) / Math.max(1, max - 1))) : 0;
+    for (let i = 1; i <= 3; i++) voiture.classList.toggle('degat-' + i, niveau >= i);
     const [x, a] = DECALAGE_VOLANT[etat.volant] || [0, 0];
     voiture.style.transform = `translateX(${x}px) rotate(${a}deg)`;
     voiture.classList.toggle('cligno-gauche', etat.clignotant === 'gauche' || etat.warnings === 'on');
